@@ -44,7 +44,7 @@ export function Magnet({
 
   return (
     <Tag
-      ref={(node) => {
+      ref={(node: HTMLElement | null) => {
         ref.current = node;
       }}
       className={className}
