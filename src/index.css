@@ -23,12 +23,15 @@ html,
 body,
 #root {
   width: 100%;
+  max-width: 100%;
   min-height: 100%;
   margin: 0;
+  overflow-x: hidden;
 }
 
 body {
   min-height: 100vh;
+  min-height: 100dvh;
   overflow: hidden;
   background:
     radial-gradient(circle at 15% 20%, rgba(46, 126, 255, 0.12), transparent 30%),
@@ -48,6 +51,7 @@ button {
 .app-shell {
   position: relative;
   min-height: 100vh;
+  min-height: 100dvh;
   overflow: hidden;
 }
 
@@ -111,10 +115,12 @@ button {
   align-items: stretch;
   width: 100%;
   min-height: 100vh;
+  min-height: 100dvh;
   padding: clamp(1rem, 2vw, 1.8rem);
 }
 
 .app-frame__column {
+  min-width: 0;
   border: 1px solid var(--line);
   border-radius: 32px;
   background: linear-gradient(180deg, rgba(17, 24, 38, 0.72), rgba(10, 14, 23, 0.86));
@@ -135,6 +141,7 @@ button {
   flex-direction: column;
   height: 100%;
   min-height: calc(100vh - 3.6rem);
+  min-height: calc(100dvh - 3.6rem);
 }
 
 .app-frame__column--sides .dial-wheel {
@@ -183,8 +190,10 @@ button {
   justify-content: flex-start;
   gap: 1rem;
   padding: 1.2rem;
+  min-width: 0;
+  min-height: 0;
+  overflow-x: hidden;
 }
-
 
 .app-frame__column--sides.is-dormant {
   opacity: 0.46;
@@ -195,6 +204,7 @@ button {
   place-items: center;
   height: 100%;
   min-height: calc(100vh - 3.6rem);
+  min-height: calc(100dvh - 3.6rem);
   color: rgba(255, 255, 255, 0.28);
   letter-spacing: 0.12em;
   font-size: 0.82rem;
@@ -202,16 +212,19 @@ button {
   padding: 1rem;
 }
 
-
 .dial-wheel {
   position: relative;
   height: 100%;
   min-height: calc(100vh - 3.6rem);
+  min-height: calc(100dvh - 3.6rem);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 1rem;
   overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  overscroll-behavior: contain;
 }
 
 .dial-wheel__rail {
@@ -228,6 +241,16 @@ button {
   position: relative;
   width: 100%;
   height: 92%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dial-wheel__touch-zone {
+  position: relative;
+  width: min(100%, 18rem);
+  height: 100%;
+  max-width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -284,6 +307,7 @@ button {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  min-width: 0;
 }
 
 .strategy-board__meta {
@@ -316,6 +340,7 @@ button {
 .strategy-board__grid {
   display: grid;
   gap: 1rem;
+  min-width: 0;
 }
 
 .strategy-card {
@@ -384,6 +409,7 @@ button {
   font-weight: 800;
   line-height: 1.02;
   letter-spacing: -0.03em;
+  overflow-wrap: anywhere;
 }
 
 .strategy-card__footer {
@@ -475,6 +501,7 @@ button {
   margin: 0;
   font-size: clamp(1.65rem, 1vw + 1.4rem, 2.8rem);
   letter-spacing: -0.04em;
+  overflow-wrap: anywhere;
 }
 
 .detail-panel__metrics {
@@ -519,6 +546,10 @@ button {
   letter-spacing: 0.04em;
 }
 
+.empty-state--compact {
+  min-height: 10rem;
+}
+
 @keyframes drift {
   0%,
   100% {
@@ -529,25 +560,350 @@ button {
   }
 }
 
-@media (max-width: 1180px) {
-  body {
-    overflow: auto;
-  }
-
-  .app-frame {
-    grid-template-columns: 1fr;
-    min-height: auto;
-  }
-
-  .dial-wheel {
-    min-height: 23rem;
-  }
-
-  .app-frame__column--board {
-    min-height: 28rem;
+@media (pointer: coarse) {
+  .dial-wheel__touch-zone {
+    touch-action: none;
   }
 }
 
-.empty-state--compact {
-  min-height: 10rem;
+@media (max-width: 1180px) {
+  body {
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .app-shell {
+    overflow: visible;
+  }
+
+  .app-frame {
+    min-height: auto;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.72fr);
+    align-items: start;
+  }
+
+  .app-frame__column--board {
+    grid-column: 1 / -1;
+  }
+
+  .app-frame__column--coins,
+  .app-frame__column--sides,
+  .coin-column,
+  .dial-wheel,
+  .dial-placeholder {
+    min-height: 30rem;
+  }
+
+  .strategy-board__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  html,
+  body,
+  #root {
+    height: 100%;
+    min-height: 100dvh;
+    overflow-x: hidden;
+  }
+
+  body {
+    overflow: hidden;
+  }
+
+  .app-shell {
+    height: 100dvh;
+    min-height: 100dvh;
+    overflow: hidden;
+  }
+
+  .app-frame {
+    height: 100dvh;
+    min-height: 100dvh;
+    max-height: 100dvh;
+    padding: 0.55rem;
+    gap: 0.55rem;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.62fr);
+    grid-template-rows: 15.5rem minmax(0, 1fr);
+    align-items: stretch;
+    overflow: hidden;
+  }
+
+  .app-frame__column {
+    min-width: 0;
+    min-height: 0;
+    border-radius: 18px;
+  }
+
+  .app-frame__column--coins {
+    grid-column: 1 / 2;
+    grid-row: 1 / 2;
+  }
+
+  .app-frame__column--sides {
+    grid-column: 2 / 3;
+    grid-row: 1 / 2;
+  }
+
+  .app-frame__column--board {
+  grid-column: 1 / 3;
+  grid-row: 2 / 3;
+  min-height: 0;
+  padding: 0.7rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior-y: contain;
+  overscroll-behavior-x: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+  .coin-column {
+    min-height: 0;
+    height: 100%;
+  }
+
+  .coin-search {
+    height: 3rem;
+    padding: 0.55rem 0.55rem 0;
+  }
+
+  .coin-search__input {
+    height: 2.4rem;
+    padding: 0 0.8rem;
+    font-size: 0.9rem;
+    border-radius: 14px;
+  }
+
+  .app-frame__column--coins,
+  .app-frame__column--sides,
+  .dial-wheel,
+  .dial-placeholder {
+    min-height: 0;
+    height: 100%;
+  }
+
+  .dial-wheel {
+    padding: 0.45rem;
+  }
+
+  .app-frame__column--sides .dial-wheel {
+    padding-top: 0.45rem;
+  }
+
+  .app-frame__column--sides .dial-wheel__rail {
+    top: 50%;
+  }
+
+  .dial-wheel__viewport {
+    height: 100%;
+  }
+
+  .dial-wheel__touch-zone {
+    width: min(100%, 10rem);
+  }
+
+  .dial-wheel__rail {
+    left: 12%;
+    right: 12%;
+  }
+
+  .dial-wheel__item {
+    min-width: 5.2rem;
+    max-width: min(9rem, 88%);
+    padding: 0.28rem 0.55rem;
+  }
+
+  .app-frame__column--coins .dial-wheel__item {
+    font-size: clamp(0.82rem, 3.8vw, 1.02rem);
+    font-weight: 700;
+  }
+
+  .dial-wheel__item--side {
+    min-width: 5.4rem;
+    font-size: clamp(0.95rem, 4vw, 1.12rem);
+    font-weight: 800;
+  }
+
+  .strategy-board {
+    gap: 0.65rem;
+  }
+
+  .strategy-board__meta {
+    gap: 0.45rem;
+    padding: 0 0.1rem;
+    flex-wrap: wrap;
+  }
+
+  .strategy-board__meta-label {
+    font-size: 0.58rem;
+    padding: 0.18rem 0.45rem;
+    letter-spacing: 0.12em;
+  }
+
+  .strategy-board__meta-value {
+    font-size: 0.78rem;
+    letter-spacing: 0.03em;
+  }
+
+  .strategy-board__grid {
+  grid-template-columns: 1fr;
+  gap: 0.6rem;
+}
+
+  .strategy-card {
+    min-height: 7rem;
+    padding: 0.7rem;
+    border-radius: 16px;
+  }
+
+  .strategy-card__logic {
+    font-size: 0.56rem;
+    letter-spacing: 0.1em;
+  }
+
+  .strategy-card__subtitle {
+    font-size: clamp(0.92rem, 3.7vw, 1.15rem);
+    line-height: 1.05;
+  }
+
+  .strategy-card__open,
+  .strategy-card__empty {
+    width: 2.6rem;
+    font-size: 1rem;
+  }
+
+  .spotlight-panel {
+    padding: 0.75rem;
+    border-radius: 18px;
+  }
+
+  .detail-panel__head {
+    gap: 0.5rem;
+  }
+
+  .detail-panel__eyebrow {
+    gap: 0.35rem;
+  }
+
+  .detail-panel__eyebrow span {
+    font-size: 0.58rem;
+    padding: 0.2rem 0.45rem;
+    letter-spacing: 0.08em;
+  }
+
+  .detail-panel__title {
+    font-size: clamp(1rem, 4.8vw, 1.35rem);
+    line-height: 1.05;
+  }
+
+  .detail-panel__metrics {
+  min-width: 0;
+  width: 100%;
+}
+
+  .detail-metric {
+    padding: 0.65rem;
+    border-radius: 14px;
+  }
+
+  .detail-metric__label {
+    font-size: 0.64rem;
+    margin-bottom: 0.28rem;
+  }
+
+  .detail-metric__value {
+    font-size: 0.96rem;
+  }
+
+  .empty-state,
+  .empty-state--compact {
+    min-height: 5rem;
+    font-size: 0.78rem;
+    padding: 0.75rem;
+    border-radius: 16px;
+  }
+}
+
+@media (max-width: 560px) {
+  .app-frame {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.6fr);
+    grid-template-rows: 14rem minmax(0, 1fr);
+    padding: 0.45rem;
+    gap: 0.45rem;
+  }
+
+  .coin-search {
+    height: 2.8rem;
+    padding: 0.45rem 0.45rem 0;
+  }
+
+  .coin-search__input {
+    height: 2.2rem;
+    font-size: 0.84rem;
+  }
+
+  .dial-wheel {
+    padding: 0.35rem;
+  }
+
+  .dial-wheel__touch-zone {
+    width: min(100%, 8.5rem);
+  }
+
+  .dial-wheel__item {
+    min-width: 4.6rem;
+    max-width: min(7.4rem, 90%);
+    padding: 0.24rem 0.45rem;
+  }
+
+  .app-frame__column--coins .dial-wheel__item {
+    font-size: clamp(0.75rem, 3.8vw, 0.92rem);
+  }
+
+  .dial-wheel__item--side {
+    min-width: 4.8rem;
+    font-size: clamp(0.85rem, 3.9vw, 1rem);
+  }
+
+  .strategy-board__grid {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .strategy-card {
+    min-height: 6.2rem;
+    padding: 0.62rem;
+  }
+
+  .strategy-card__subtitle {
+    font-size: clamp(0.86rem, 4vw, 1.02rem);
+  }
+
+  .strategy-card__open,
+  .strategy-card__empty {
+    width: 2.35rem;
+    font-size: 0.92rem;
+  }
+
+  .detail-panel__metrics {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.45rem;
+  }
+
+  .detail-metric {
+    padding: 0.58rem;
+  }
+
+  .detail-metric__label {
+    font-size: 0.6rem;
+  }
+
+  .detail-metric__value {
+    font-size: 0.88rem;
+  }
+
+  .detail-panel__title {
+    font-size: clamp(0.92rem, 4.5vw, 1.18rem);
+  }
 }

@@ -25,10 +25,7 @@ export function StrategyBoard({
         </span>
       </div>
 
-      <div
-        className="strategy-board__grid"
-        style={{ gridTemplateColumns: `repeat(${strategies.length}, minmax(180px, 1fr))` }}
-      >
+      <div className="strategy-board__grid">
         {strategies.map((strategy, index) => {
           const clickable = strategy.highlighted;
           const active = clickable && strategy.key === selectedStrategyKey;
