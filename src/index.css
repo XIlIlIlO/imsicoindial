@@ -561,6 +561,7 @@ button {
 }
 
 @media (pointer: coarse) {
+  .dial-wheel,
   .dial-wheel__touch-zone {
     touch-action: none;
   }

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { Magnet } from '../reactbits/Magnet';
 import { clampIndex } from '../lib/format';
 
@@ -27,6 +27,10 @@ export function DialWheel({
   itemClassName = '',
 }: DialWheelProps) {
   const wheelLock = useRef(false);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const touchStartY = useRef<number | null>(null);
+  const touchAccum = useRef(0);
+  const moveRef = useRef<(direction: 1 | -1) => void>(() => {});
   const selectedIndex = Math.max(
     0,
     items.findIndex((item) => item.id === selectedId),
@@ -64,8 +68,56 @@ export function DialWheel({
     }
   };
 
+  moveRef.current = move;
+
+  useEffect(() => {
+    const node = containerRef.current;
+    if (!node) return;
+
+    const threshold = Math.max(28, density * 0.55);
+
+    const onTouchStart = (event: TouchEvent) => {
+      if (event.touches.length !== 1) return;
+      touchStartY.current = event.touches[0].clientY;
+      touchAccum.current = 0;
+    };
+
+    const onTouchMove = (event: TouchEvent) => {
+      if (touchStartY.current === null) return;
+      event.preventDefault();
+      const currentY = event.touches[0].clientY;
+      const delta = touchStartY.current - currentY;
+      touchAccum.current += delta;
+      touchStartY.current = currentY;
+
+      while (Math.abs(touchAccum.current) >= threshold) {
+        const direction: 1 | -1 = touchAccum.current > 0 ? 1 : -1;
+        moveRef.current(direction);
+        touchAccum.current -= direction * threshold;
+      }
+    };
+
+    const onTouchEnd = () => {
+      touchStartY.current = null;
+      touchAccum.current = 0;
+    };
+
+    node.addEventListener('touchstart', onTouchStart, { passive: true });
+    node.addEventListener('touchmove', onTouchMove, { passive: false });
+    node.addEventListener('touchend', onTouchEnd);
+    node.addEventListener('touchcancel', onTouchEnd);
+
+    return () => {
+      node.removeEventListener('touchstart', onTouchStart);
+      node.removeEventListener('touchmove', onTouchMove);
+      node.removeEventListener('touchend', onTouchEnd);
+      node.removeEventListener('touchcancel', onTouchEnd);
+    };
+  }, [density]);
+
   return (
     <div
+      ref={containerRef}
       className={`dial-wheel ${className}`.trim()}
       onWheel={(event) => {
         event.preventDefault();
